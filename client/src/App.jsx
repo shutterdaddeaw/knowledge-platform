@@ -6,8 +6,9 @@ import { User, LogIn, Award, PlayCircle, CheckCircle, Smartphone, X, BookOpen } 
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
 
-const socket = io('http://localhost:3000');
-const API_URL = 'http://localhost:3000/api';
+const BACKEND = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const socket = io(BACKEND); // (ในไฟล์ที่ใช้ socket)
+const API_URL = `${BACKEND}/api`;
 
 function App() {
   // Simple URL parameter routing for demo purposes (or use react-router in real app)
