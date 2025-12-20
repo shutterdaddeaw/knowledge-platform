@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Trash2, Edit2, Save, X, BookOpen, HelpCircle, LayoutDashboard, Download } from 'lucide-react';
 
+const BACKEND = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const API_URL = `${BACKEND}/api`;
 
 export default function AdminDashboard() {
