@@ -4,8 +4,9 @@ import io from 'socket.io-client';
 import { motion } from 'framer-motion';
 import { Play, BarChart2, LayoutGrid, Users, Trophy } from 'lucide-react';
 
-const socket = io('http://localhost:3000'); // IP Backend
-const API_URL = 'http://localhost:3000/api';
+const BACKEND = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const socket = io(BACKEND); // (ในไฟล์ที่ใช้ socket)
+const API_URL = `${BACKEND}/api`;
 
 function Admin() {
   const [courses, setCourses] = useState([]);
