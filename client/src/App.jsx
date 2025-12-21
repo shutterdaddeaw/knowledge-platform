@@ -180,7 +180,7 @@ function App() {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center shadow-lg">
               <Smartphone className="text-white" size={20} />
             </div>
-            <span className="font-bold text-xl tracking-tight">KSP Quiz</span>
+            <span className="font-bold text-xl tracking-tight">PRM:Course&Quiz</span>
           </div>
           {user && (
             <div className="glass-panel px-3 py-1 flex items-center gap-2 rounded-full text-sm font-medium">
