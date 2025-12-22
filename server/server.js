@@ -347,8 +347,12 @@ io.on('connection', (socket) => {
         socket.courseId = courseId;
     });
 
+    // Simple in-memory lock state
+    const courseLocks = {};
+
     socket.on('admin_start_question', async ({ courseId, questionId }) => {
         console.log(`🚀 Admin ปล่อยคำถาม ID: ${questionId}`);
+        courseLocks[courseId] = false; // Unlock
         const question = await Question.findById(questionId);
         if (!question) return;
 
@@ -363,11 +367,19 @@ io.on('connection', (socket) => {
 
     socket.on('admin_end_question', ({ courseId }) => {
         console.log(`🛑 Admin สั่งหมดเวลา Course: ${courseId}`);
+        courseLocks[courseId] = true; // Lock
         io.to(courseId).emit('question_timeout');
     });
 
     socket.on('submit_answer', async ({ questionId, answerIndex, clientStartTime }) => {
         if (!socket.userId || !socket.courseId) return;
+
+        // Check Lock
+        if (courseLocks[socket.courseId]) {
+            console.log(`⚠️ User ${socket.userId} tried to answer after manual timeout.`);
+            return;
+        }
+
         const question = await Question.findById(questionId);
         const isCorrect = question.correctIndex === answerIndex;
 
