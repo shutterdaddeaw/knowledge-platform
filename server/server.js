@@ -403,6 +403,21 @@ io.on('connection', (socket) => {
         const topUsers = await User.find({ currentCourseId: socket.courseId }).sort({ totalScore: -1 }).limit(5);
         io.to(socket.courseId).emit('update_leaderboard', topUsers);
     });
+
+    socket.on('admin_reset_scores', async ({ courseId }) => {
+        console.log(`⚠️ Admin Reset Leaderboard for Course: ${courseId}`);
+        // 1. Reset User Scores
+        await User.updateMany(
+            { currentCourseId: courseId },
+            { $set: { totalScore: 0 } }
+        );
+
+        // 2. Delete All Results for this course
+        await Result.deleteMany({ courseId: courseId });
+
+        // 3. Notify Clients (Update Leaderboard to empty)
+        io.to(courseId).emit('update_leaderboard', []);
+    });
 });
 
 const PORT = process.env.PORT || 3000;
