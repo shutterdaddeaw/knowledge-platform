@@ -28,13 +28,19 @@ function App() {
   const [liveQuestion, setLiveQuestion] = useState(null);
   const [liveResult, setLiveResult] = useState(null);
   const [viewTab, setViewTab] = useState('STUDY'); // STUDY | TEST
+  const [isTimeUp, setIsTimeUp] = useState(false); // Track if time is up
 
   // --- SOCKET ---
   useEffect(() => {
     socket.on('receive_question', (question) => {
       setLiveQuestion(question);
       setLiveResult(null);
+      setIsTimeUp(false); // Reset time up state
       setStep('LIVE_QUIZ');
+    });
+
+    socket.on('question_timeout', () => {
+      setIsTimeUp(true);
     });
 
     socket.on('answer_result', (result) => {
@@ -45,6 +51,7 @@ function App() {
     return () => {
       socket.off('receive_question');
       socket.off('answer_result');
+      socket.off('question_timeout');
     };
   }, []);
 
@@ -179,7 +186,7 @@ function App() {
   };
 
   const submitLiveAnswer = (index) => {
-    if (!liveQuestion) return;
+    if (!liveQuestion || isTimeUp) return;
     socket.emit('submit_answer', {
       questionId: liveQuestion._id,
       answerIndex: index,
@@ -430,6 +437,14 @@ function App() {
                       </motion.button>
                     ))}
                   </div>
+
+                  {/* Time's Up Overlay */}
+                  {isTimeUp && (
+                    <div className="mt-4 text-center">
+                      <h2 className="text-2xl font-bold text-red-500 animate-bounce">⏰ Time's Up!</h2>
+                      <p className="text-gray-400">Waiting for next question...</p>
+                    </div>
+                  )}
                 </motion.div>
               )}
 
