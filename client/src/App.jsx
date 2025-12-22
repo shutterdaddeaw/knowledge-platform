@@ -147,10 +147,35 @@ function App() {
   };
 
   const handleSubmitPreTest = async () => {
-    // In real app, submit answers to backend
-    // await axios.post(...)
-    alert('Answers submitted successfully!');
-    setViewTab('STUDY');
+    if (!user || !selectedCourse) return;
+
+    // Convert answers object to array format expected by backend
+    // preTestAnswers is { questionId: optionIndex }
+    const answersArray = Object.entries(preTestAnswers).map(([qId, optIdx]) => ({
+      questionId: qId,
+      selectedOptionIndex: optIdx
+    }));
+
+    // Check if all questions are answered (Optional, but good UX)
+    if (answersArray.length < preTestQuestions.length) {
+      if (!confirm('You haven\'t answered all questions. Submit anyway?')) return;
+    }
+
+    try {
+      const res = await axios.post(`${API_URL}/submit-pretest`, {
+        userId: user._id,
+        courseId: selectedCourse._id,
+        answers: answersArray
+      });
+
+      if (res.data.success) {
+        alert(`Answers submitted successfully! Score: ${res.data.totalScore}`);
+        setViewTab('STUDY');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error submitting answers. Please try again.');
+    }
   };
 
   const submitLiveAnswer = (index) => {
