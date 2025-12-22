@@ -132,6 +132,7 @@ function Admin() {
                 <button
                   onClick={() => {
                     if (confirm('End time for this question?')) {
+                      console.log('🛑 [ADMIN] Sending admin_end_question');
                       socket.emit('admin_end_question', { courseId: selectedCourse._id });
                     }
                   }}
