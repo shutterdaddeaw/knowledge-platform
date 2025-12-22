@@ -110,22 +110,37 @@ function Admin() {
 
         <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-2">
           {questions.map((q, idx) => (
-            <button
-              key={q._id}
-              onClick={() => startQuestion(idx)}
-              className={`w-full p-4 rounded-xl text-left transition relative overflow-hidden group ${currentQIndex === idx
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                : 'bg-white/5 hover:bg-white/10 text-gray-300'
-                }`}
-            >
-              <div className="relative z-10 flex justify-between items-start">
-                <div>
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded mb-2 inline-block ${currentQIndex === idx ? 'bg-black/20' : 'bg-white/10'}`}>Q{idx + 1}</span>
-                  <p className="font-semibold text-sm line-clamp-2">{q.text}</p>
+            <div key={q._id} className="relative group">
+              <button
+                onClick={() => startQuestion(idx)}
+                className={`w-full p-4 rounded-xl text-left transition relative overflow-hidden ${currentQIndex === idx
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10 text-gray-300'
+                  }`}
+              >
+                <div className="relative z-10 flex justify-between items-start">
+                  <div>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded mb-2 inline-block ${currentQIndex === idx ? 'bg-black/20' : 'bg-white/10'}`}>Q{idx + 1}</span>
+                    <p className="font-semibold text-sm line-clamp-2">{q.text}</p>
+                  </div>
+                  <span className="text-xs font-mono opacity-60 mt-1">{q.timeLimit}s</span>
                 </div>
-                <span className="text-xs font-mono opacity-60 mt-1">{q.timeLimit}s</span>
-              </div>
-            </button>
+              </button>
+
+              {/* Manual Timeout Button (Only visible for active question) */}
+              {currentQIndex === idx && (
+                <button
+                  onClick={() => {
+                    if (confirm('End time for this question?')) {
+                      socket.emit('admin_end_question', { courseId: selectedCourse._id });
+                    }
+                  }}
+                  className="absolute right-2 bottom-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded shadow z-20"
+                >
+                  ⏹ End Time
+                </button>
+              )}
+            </div>
           ))}
         </div>
 
