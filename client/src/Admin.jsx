@@ -132,7 +132,6 @@ function Admin() {
                 <button
                   onClick={() => {
                     if (confirm('End time for this question?')) {
-                      console.log('🛑 [ADMIN] Sending admin_end_question');
                       socket.emit('admin_end_question', { courseId: selectedCourse._id });
                     }
                   }}
@@ -145,12 +144,23 @@ function Admin() {
           ))}
         </div>
 
-        <div className="mt-6 pt-6 border-t border-white/10">
+        <div className="mt-6 pt-6 border-t border-white/10 space-y-3">
           <button
             onClick={handleExport}
             className="w-full glass-btn flex items-center justify-center gap-2 bg-emerald-600/80 hover:bg-emerald-600"
           >
             <BarChart2 size={20} /> Export Report
+          </button>
+
+          <button
+            onClick={() => {
+              if (confirm('⚠️ WARNING: This will RESET all scores and delete all result history for this course. Are you sure?')) {
+                socket.emit('admin_reset_scores', { courseId: selectedCourse._id });
+              }
+            }}
+            className="w-full glass-btn flex items-center justify-center gap-2 bg-red-600/80 hover:bg-red-600 border border-red-500/50"
+          >
+            <Users size={20} /> Reset Leaderboard
           </button>
         </div>
       </div>
