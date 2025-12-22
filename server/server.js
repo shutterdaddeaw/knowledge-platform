@@ -361,6 +361,11 @@ io.on('connection', (socket) => {
         });
     });
 
+    socket.on('admin_end_question', ({ courseId }) => {
+        console.log(`🛑 Admin สั่งหมดเวลา Course: ${courseId}`);
+        io.to(courseId).emit('question_timeout');
+    });
+
     socket.on('submit_answer', async ({ questionId, answerIndex, clientStartTime }) => {
         if (!socket.userId || !socket.courseId) return;
         const question = await Question.findById(questionId);
