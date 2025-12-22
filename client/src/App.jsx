@@ -40,6 +40,7 @@ function App() {
     });
 
     socket.on('question_timeout', () => {
+      console.log('🛑 [CLIENT] Received question_timeout event');
       setIsTimeUp(true);
     });
 
