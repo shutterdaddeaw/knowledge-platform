@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { User, LogIn, Award, PlayCircle, CheckCircle, Smartphone, X, BookOpen } from 'lucide-react';
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
+import AdminLogin from './AdminLogin';
 
 const BACKEND = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const socket = io(BACKEND); // (ในไฟล์ที่ใช้ socket)
@@ -15,8 +16,23 @@ function App() {
   const urlParams = new URLSearchParams(window.location.search);
   const isAdmin = urlParams.get('admin');
 
-  if (isAdmin === 'true' || isAdmin === 'dashboard') return <AdminDashboard />;
-  if (isAdmin === 'live') return <Admin />;
+  // ADMIN AUTHENTICATION
+  const [adminAuth, setAdminAuth] = useState(() => {
+    return sessionStorage.getItem('admin_authenticated') === 'true';
+  });
+
+  if (isAdmin) {
+    if (!adminAuth) {
+      return (
+        <AdminLogin onLogin={() => {
+          setAdminAuth(true);
+          sessionStorage.setItem('admin_authenticated', 'true');
+        }} />
+      );
+    }
+    if (isAdmin === 'live') return <Admin />;
+    return <AdminDashboard />;
+  }
 
   // --- USER STATE ---
   const [step, setStep] = useState('LOGIN');
@@ -40,7 +56,6 @@ function App() {
     });
 
     socket.on('question_timeout', () => {
-      console.log('🛑 [CLIENT] Received question_timeout event');
       setIsTimeUp(true);
     });
 
